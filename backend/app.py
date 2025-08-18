@@ -114,6 +114,40 @@ async def get_launches(
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
+@app.get("/api/crew")
+async def get_crew():
+    """
+    Get all SpaceX crew members with essential information
+    """
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get("https://api.spacexdata.com/v4/crew")
+            response.raise_for_status()
+            crew_data = response.json()
+            
+            # Filter and format crew data to only include essential information
+            formatted_crew = []
+            for crew_member in crew_data:
+                formatted_crew_member = {
+                    "id": crew_member.get("id"),
+                    "name": crew_member.get("name"),
+                    "agency": crew_member.get("agency"),
+                    "image": crew_member.get("image"),
+                    "status": crew_member.get("status"),
+                    "wikipedia": crew_member.get("wikipedia")
+                }
+                formatted_crew.append(formatted_crew_member)
+            
+            return {
+                "crew": formatted_crew,
+                "total": len(formatted_crew)
+            }
+            
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=500, detail=f"Error fetching crew data: {str(e)}")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc: HTTPException):
     if request.url.path.startswith("/api"):

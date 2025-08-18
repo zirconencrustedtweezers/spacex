@@ -169,6 +169,40 @@
                     </div>
                   </div>
                 </div>
+                
+                <!-- Crew Expansion Section -->
+                <div 
+                  v-if="isLaunchExpanded(launch) && launch.crew && launch.crew.length > 0"
+                  class="crew-expansion"
+                >
+                  <div class="crew-divider"></div>
+                  <div class="crew-list">
+                    <div 
+                      v-for="crewMember in getCrewMembers(launch)" 
+                      :key="crewMember.id"
+                      class="crew-member"
+                    >
+                      <div class="crew-avatar">
+                        <figure class="image is-48x48" v-if="crewMember.image">
+                          <img 
+                            :src="crewMember.image" 
+                            :alt="crewMember.name"
+                            class="is-rounded"
+                          >
+                        </figure>
+                        <div v-else class="image is-48x48 has-background-light is-flex is-align-items-center is-justify-content-center is-rounded">
+                          <i class="fas fa-user has-text-grey"></i>
+                        </div>
+                      </div>
+                      <div class="crew-info">
+                        <p class="crew-name has-text-weight-semibold">{{ crewMember.name }}</p>
+                        <p class="crew-details has-text-grey is-size-7">
+                          {{ crewMember.agency }} • {{ crewMember.status }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -208,6 +242,7 @@ import axios from 'axios'
 
 export default {
   name: 'Launches',
+  inject: ['crewMap', 'getCrewMember'],
   data() {
     return {
       launches: [],
@@ -215,7 +250,8 @@ export default {
       error: null,
       currentPage: 1,
       hasMore: false,
-      showCrewOnly: true
+      showCrewOnly: true,
+      expandedLaunches: new Set()
     }
   },
   
@@ -266,9 +302,47 @@ export default {
     },
 
     viewCrew(launch) {
-      console.log('View crew for launch:', launch.mission_name, '(Flight #' + launch.flight_number + ')')
-      // TODO: Navigate to crew details page
-      // This will be implemented later
+      const launchId = launch.flight_number
+      console.log('Toggling crew for launch:', launch.mission_name)
+      console.log('Launch crew data:', launch.crew)
+      console.log('Crew map has entries:', this.crewMap.size)
+      
+      if (this.expandedLaunches.has(launchId)) {
+        this.expandedLaunches.delete(launchId)
+      } else {
+        this.expandedLaunches.add(launchId)
+        
+        // Debug crew member lookup
+        if (launch.crew && launch.crew.length > 0) {
+          console.log('Looking up crew members:')
+          launch.crew.forEach(crewId => {
+            const crewMember = this.getCrewMember(crewId)
+            console.log(`  Crew ID: ${crewId} → Member:`, crewMember)
+          })
+        }
+      }
+      this.$forceUpdate()
+    },
+
+    isLaunchExpanded(launch) {
+      return this.expandedLaunches.has(launch.flight_number)
+    },
+
+    getCrewMembers(launch) {
+      if (!launch.crew || launch.crew.length === 0) {
+        console.log('No crew data for launch:', launch.mission_name)
+        return []
+      }
+      
+      console.log('Getting crew members for:', launch.mission_name, 'crew IDs:', launch.crew)
+      const crewMembers = launch.crew.map(({ crew: crewId }) => {
+        const member = this.getCrewMember(crewId)
+        console.log(`Mapped crew ID ${crewId} to:`, member)
+        return member
+      }).filter(member => member !== null)
+      
+      console.log('Final crew members array:', crewMembers)
+      return crewMembers
     },
 
     toggleCrewFilter() {
@@ -386,6 +460,73 @@ export default {
 .button.is-small {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
+}
+
+/* Crew Expansion Styles */
+.crew-expansion {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.crew-divider {
+  height: 1px;
+  background: linear-gradient(to right, #dbdbdb, transparent);
+  margin-bottom: 1rem;
+}
+
+.crew-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.crew-member {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.crew-avatar {
+  flex-shrink: 0;
+}
+
+.crew-avatar .image {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+.crew-info {
+  flex: 1;
+}
+
+.crew-name {
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.crew-details {
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+    padding-bottom: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+    padding-bottom: 1.5rem;
+  }
+}
+
+/* Enhanced card transitions */
+.launch-card-horizontal .card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, max-height 0.3s ease;
+  overflow: hidden;
 }
 
 @media screen and (max-width: 768px) {
