@@ -1,20 +1,57 @@
 <template>
   <div id="app">
-    <Launches />
+    <nav class="navbar is-dark" role="navigation">
+      <div class="navbar-brand">
+        <div class="navbar-item">
+          <h1 class="title is-4 has-text-white">
+            🚀 SpaceX Explorer
+          </h1>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="tabs is-centered is-boxed">
+      <ul>
+        <li :class="{ 'is-active': activeTab === 'launches' }">
+          <a @click="setActiveTab('launches')">
+            <span class="icon is-small">
+              <i class="fas fa-rocket"></i>
+            </span>
+            <span>Launches</span>
+          </a>
+        </li>
+        <li :class="{ 'is-active': activeTab === 'rockets' }">
+          <a @click="setActiveTab('rockets')">
+            <span class="icon is-small">
+              <i class="fas fa-space-shuttle"></i>
+            </span>
+            <span>Rockets</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="tab-content">
+      <Launches v-if="activeTab === 'launches'" />
+      <Rockets v-else-if="activeTab === 'rockets'" />
+    </div>
   </div>
 </template>
 
 <script>
 import Launches from './components/Launches.vue'
+import Rockets from './components/Rockets.vue'
 import axios from 'axios'
 
 export default {
   name: 'App',
   components: {
-    Launches
+    Launches,
+    Rockets
   },
   data() {
     return {
+      activeTab: 'launches',
       crewMap: new Map(),
       crewLoading: true,
       crewError: null
@@ -49,6 +86,10 @@ export default {
     
     getCrewMember(crewId) {
       return this.crewMap.get(crewId) || null
+    },
+    
+    setActiveTab(tab) {
+      this.activeTab = tab
     }
   },
   
@@ -57,3 +98,75 @@ export default {
   }
 }
 </script>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabs {
+  background: white;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabs ul {
+  border-bottom: none;
+}
+
+.tabs li a {
+  border: none;
+  border-radius: 0;
+  padding: 1rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.tabs li:hover a {
+  background-color: #f5f5f5;
+  border-color: transparent;
+}
+
+.tabs li.is-active a {
+  background-color: #3273dc !important;
+  color: white !important;
+  border-color: #3273dc !important;
+}
+
+.tabs li.is-active a:hover {
+  background-color: #2366d1 !important;
+  color: white !important;
+}
+
+.tab-content {
+  background: white;
+  min-height: calc(100vh - 140px);
+}
+
+
+
+@media (max-width: 768px) {
+  .tabs ul {
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  .tabs li a {
+    padding: 0.75rem 1rem;
+  }
+  
+  .tabs li a span:last-child {
+    display: none;
+  }
+}
+</style>
