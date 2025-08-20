@@ -20,13 +20,6 @@ if os.path.exists("static"):
     app.mount("/assets", StaticFiles(directory="static/assets"), name="assets")
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/api/user")
-async def get_user():
-    return {
-        "firstName": "John",
-        "lastName": "Doe"
-    }
-
 @app.get("/api/launches")
 async def get_launches(
     page: int = Query(1, ge=1, description="Page number starting from 1"),

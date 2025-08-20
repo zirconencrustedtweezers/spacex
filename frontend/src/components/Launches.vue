@@ -51,162 +51,18 @@
           >
             <i class="fas fa-chevron-left"></i>
           </button>
-
-          <!-- Launches List -->
-          <div class="launches-list">
-            <div 
+          
+          <!-- Launches Grid -->
+          <div class="launches-grid">
+            <LaunchCard
               v-for="launch in launches" 
               :key="launch.flight_number"
-              class="launch-card-horizontal"
-            >
-              <div class="card">
-                <div class="card-content">
-                  <div class="columns is-vcentered">
-                    <!-- Mission Patch -->
-                    <div class="column is-narrow">
-                      <figure class="image is-96x96" v-if="launch.links.mission_patch_small">
-                        <img 
-                          :src="launch.links.mission_patch_small" 
-                          :alt="launch.mission_name + ' mission patch'"
-                          class="is-rounded"
-                        >
-                      </figure>
-                      <div v-else class="image is-96x96 has-background-light is-flex is-align-items-center is-justify-content-center">
-                        <i class="fas fa-rocket has-text-grey"></i>
-                      </div>
-                    </div>
-
-                    <!-- Launch Info -->
-                    <div class="column">
-                      <div class="columns is-mobile">
-                        <div class="column">
-                          <h3 class="title is-5 mb-2">{{ launch.mission_name }}</h3>
-                          <p class="subtitle is-6 has-text-grey mb-3">
-                            Flight #{{ launch.flight_number }} • {{ launch.launch_year }}
-                          </p>
-                          
-                          <div class="tags">
-                            <span class="tag is-light">{{ launch.rocket.rocket_name }}</span>
-                            <span 
-                              v-if="launch.upcoming" 
-                              class="tag is-info"
-                            >
-                              Upcoming
-                            </span>
-                            <span 
-                              v-else-if="launch.launch_success === true" 
-                              class="tag is-success"
-                            >
-                              Success
-                            </span>
-                            <span 
-                              v-else-if="launch.launch_success === false" 
-                              class="tag is-danger"
-                            >
-                              Failed
-                            </span>
-                            <span 
-                              v-else 
-                              class="tag is-warning"
-                            >
-                              Unknown
-                            </span>
-                          </div>
-                        </div>
-
-                        <div class="column is-narrow">
-                          <div class="has-text-right">
-                            <p class="has-text-weight-semibold">{{ launch.launch_site.site_name }}</p>
-                            <p class="has-text-grey is-size-7">{{ formatDate(launch.launch_date_local) }}</p>
-                            
-                            <!-- Action Buttons -->
-                            <div class="buttons is-right mt-3">
-                              <button 
-                                v-if="launch.crew && launch.crew.length > 0"
-                                @click="viewCrew(launch)"
-                                class="button is-small is-primary is-outlined"
-                              >
-                                <span class="icon is-small">
-                                  <i class="fas fa-users"></i>
-                                </span>
-                                <span>Crew</span>
-                              </button>
-                              
-                              <a 
-                                v-if="launch.links.video_link" 
-                                :href="launch.links.video_link" 
-                                target="_blank"
-                                class="button is-small is-danger is-outlined"
-                              >
-                                <span class="icon is-small">
-                                  <i class="fas fa-play"></i>
-                                </span>
-                                <span>Video</span>
-                              </a>
-                              
-                              <a 
-                                v-if="launch.links.wikipedia" 
-                                :href="launch.links.wikipedia" 
-                                target="_blank"
-                                class="button is-small is-info is-outlined"
-                              >
-                                <span class="icon is-small">
-                                  <i class="fab fa-wikipedia-w"></i>
-                                </span>
-                                <span>Wiki</span>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- Details -->
-                      <div v-if="launch.details" class="content">
-                        <p class="has-text-grey is-size-7">
-                          {{ truncateText(launch.details, 150) }}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Crew Expansion Section -->
-                <div 
-                  v-if="isLaunchExpanded(launch) && launch.crew && launch.crew.length > 0"
-                  class="crew-expansion"
-                >
-                  <div class="crew-divider"></div>
-                  <div class="crew-list">
-                    <div 
-                      v-for="crewMember in getCrewMembers(launch)" 
-                      :key="crewMember.id"
-                      class="crew-member"
-                    >
-                      <div class="crew-avatar">
-                        <figure class="image is-48x48" v-if="crewMember.image">
-                          <img 
-                            :src="crewMember.image" 
-                            :alt="crewMember.name"
-                            class="is-rounded"
-                          >
-                        </figure>
-                        <div v-else class="image is-48x48 has-background-light is-flex is-align-items-center is-justify-content-center is-rounded">
-                          <i class="fas fa-user has-text-grey"></i>
-                        </div>
-                      </div>
-                      <div class="crew-info">
-                        <p class="crew-name has-text-weight-semibold">{{ crewMember.name }}</p>
-                        <p class="crew-details has-text-grey is-size-7">
-                          {{ crewMember.agency }} • {{ crewMember.status }}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              :launch="launch"
+              :is-expanded="isLaunchExpanded(launch)"
+              @toggle-crew="viewCrew"
+            />
           </div>
-
+          
           <!-- Right Arrow -->
           <button 
             @click="goToPage(currentPage + 1)"
@@ -217,20 +73,20 @@
             <i class="fas fa-chevron-right"></i>
           </button>
         </div>
-
-        <!-- Empty State -->
-        <div v-else class="has-text-centered py-6">
-          <p class="title is-4 has-text-grey">No launches found</p>
-          <p class="subtitle has-text-grey">Try going back to an earlier page</p>
-        </div>
-
-        <!-- Page Indicator -->
+        
+        <!-- Page Info -->
         <div class="has-text-centered mt-4" v-if="launches.length > 0">
           <p class="has-text-grey is-size-7">
-            Page {{ currentPage }}
-            <span v-if="hasMore">• {{ launches.length }} results</span>
-            <span v-else>• Last page</span>
+            Page {{ currentPage }} • {{ launches.length }} launches
+            <span v-if="hasMore"> • More available</span>
           </p>
+        </div>
+        
+        <!-- No Results -->
+        <div v-if="launches.length === 0" class="has-text-centered py-6">
+          <i class="fas fa-search has-text-grey is-size-1 mb-4"></i>
+          <p class="title is-4 has-text-grey">No launches found</p>
+          <p class="has-text-grey">Try adjusting your filters or check back later.</p>
         </div>
       </div>
     </div>
@@ -239,9 +95,13 @@
 
 <script>
 import axios from 'axios'
+import LaunchCard from './LaunchCard.vue'
 
 export default {
   name: 'Launches',
+  components: {
+    LaunchCard
+  },
   inject: ['crewMap', 'getCrewMember'],
   data() {
     return {
@@ -254,72 +114,45 @@ export default {
       expandedLaunches: new Set()
     }
   },
-  
   methods: {
     async fetchLaunches() {
       this.loading = true
       this.error = null
       
       try {
-        let url = `/api/launches?page=${this.currentPage}`
-        if (this.showCrewOnly) {
-          url += '&withCrew=true'
+        const params = {
+          page: this.currentPage
         }
         
-        const response = await axios.get(url)
+        if (this.showCrewOnly) {
+          params.withCrew = true
+        }
+        
+        const response = await axios.get('/api/launches', { params })
+        
         this.launches = response.data.launches
         this.hasMore = response.data.has_more
-      } catch (err) {
-        this.error = 'Failed to fetch launches data'
-        console.error('Error:', err)
-      } finally {
         this.loading = false
+        
+      } catch (error) {
+        this.error = 'Failed to load launches. Please try again.'
+        this.loading = false
+        console.error('Error fetching launches:', error)
       }
     },
-
-    goToPage(page) {
-      if (page >= 1 && (page <= this.currentPage + 1 || this.hasMore)) {
-        this.currentPage = page
-        this.fetchLaunches()
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    },
-
-    formatDate(dateString) {
-      const date = new Date(dateString)
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    },
-
-    truncateText(text, maxLength) {
-      if (text.length <= maxLength) return text
-      return text.substr(0, maxLength) + '...'
+    
+    async goToPage(page) {
+      if (page < 1) return
+      this.currentPage = page
+      await this.fetchLaunches()
     },
 
     viewCrew(launch) {
       const launchId = launch.flight_number
-      console.log('Toggling crew for launch:', launch.mission_name)
-      console.log('Launch crew data:', launch.crew)
-      console.log('Crew map has entries:', this.crewMap.size)
-      
       if (this.expandedLaunches.has(launchId)) {
         this.expandedLaunches.delete(launchId)
       } else {
         this.expandedLaunches.add(launchId)
-        
-        // Debug crew member lookup
-        if (launch.crew && launch.crew.length > 0) {
-          console.log('Looking up crew members:')
-          launch.crew.forEach(crewId => {
-            const crewMember = this.getCrewMember(crewId)
-            console.log(`  Crew ID: ${crewId} → Member:`, crewMember)
-          })
-        }
       }
       this.$forceUpdate()
     },
@@ -328,30 +161,11 @@ export default {
       return this.expandedLaunches.has(launch.flight_number)
     },
 
-    getCrewMembers(launch) {
-      if (!launch.crew || launch.crew.length === 0) {
-        console.log('No crew data for launch:', launch.mission_name)
-        return []
-      }
-      
-      console.log('Getting crew members for:', launch.mission_name, 'crew IDs:', launch.crew)
-      const crewMembers = launch.crew.map(({ crew: crewId }) => {
-        const member = this.getCrewMember(crewId)
-        console.log(`Mapped crew ID ${crewId} to:`, member)
-        return member
-      }).filter(member => member !== null)
-      
-      console.log('Final crew members array:', crewMembers)
-      return crewMembers
-    },
-
     toggleCrewFilter() {
-      // Reset to page 1 when toggling filter
       this.currentPage = 1
       this.fetchLaunches()
     }
   },
-  
   mounted() {
     this.fetchLaunches()
   }
@@ -359,78 +173,72 @@ export default {
 </script>
 
 <style scoped>
+.section {
+  padding: 2rem 1.5rem;
+}
+
+.launches-container {
+  position: relative;
+}
+
 .navigation-container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  gap: 2rem;
+  min-height: 400px;
+}
+
+.launches-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
-.launches-list {
-  flex: 1;
-  min-width: 0;
-}
-
-.launch-card-horizontal {
-  margin-bottom: 1rem;
-}
-
-.launch-card-horizontal:last-child {
-  margin-bottom: 0;
-}
-
-.launch-card-horizontal .card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid #e1e1e1;
-}
-
-.launch-card-horizontal .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
 .nav-arrow {
-  background: #ffffff;
-  border: 2px solid #dbdbdb;
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background: white;
+  border: 2px solid #dbdbdb;
   color: #4a4a4a;
   font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 .nav-arrow:hover:not(.is-disabled) {
+  background: #3273dc;
+  color: white;
   border-color: #3273dc;
-  color: #3273dc;
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(50, 115, 220, 0.2);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .nav-arrow.is-disabled {
-  background: #f5f5f5;
-  border-color: #e1e1e1;
-  color: #b5b5b5;
+  opacity: 0.3;
   cursor: not-allowed;
+  background: #f5f5f5;
 }
 
 .nav-arrow-left {
-  flex-shrink: 0;
+  margin-right: auto;
 }
 
 .nav-arrow-right {
-  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .loader {
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
+  border-top: 4px solid #3273dc;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   animation: spin 1s linear infinite;
   margin: 0 auto;
 }
@@ -440,124 +248,38 @@ export default {
   100% { transform: rotate(360deg); }
 }
 
-.image.is-96x96 {
-  width: 96px;
-  height: 96px;
-}
-
-.tags {
-  gap: 0.25rem;
-}
-
-.buttons.is-right {
-  justify-content: flex-end;
-}
-
-.buttons.is-right .button {
-  margin-bottom: 0;
-}
-
-.button.is-small {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-}
-
-/* Crew Expansion Styles */
-.crew-expansion {
-  padding: 0 1.5rem 1.5rem 1.5rem;
-  animation: slideDown 0.3s ease-out;
-}
-
-.crew-divider {
-  height: 1px;
-  background: linear-gradient(to right, #dbdbdb, transparent);
-  margin-bottom: 1rem;
-}
-
-.crew-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.crew-member {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
-}
-
-.crew-avatar {
-  flex-shrink: 0;
-}
-
-.crew-avatar .image {
-  width: 48px !important;
-  height: 48px !important;
-}
-
-.crew-info {
-  flex: 1;
-}
-
-.crew-name {
-  margin-bottom: 0.25rem;
-  line-height: 1.2;
-}
-
-.crew-details {
-  margin-bottom: 0;
-  line-height: 1.2;
-}
-
-@keyframes slideDown {
-  from {
-    max-height: 0;
-    opacity: 0;
-    padding-bottom: 0;
-  }
-  to {
-    max-height: 500px;
-    opacity: 1;
-    padding-bottom: 1.5rem;
-  }
-}
-
-/* Enhanced card transitions */
-.launch-card-horizontal .card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, max-height 0.3s ease;
-  overflow: hidden;
-}
-
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .navigation-container {
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
   }
   
   .nav-arrow {
-    align-self: center;
+    position: static;
+    transform: none;
+    margin: 0;
   }
   
   .nav-arrow-left,
   .nav-arrow-right {
-    width: 100%;
-    max-width: 200px;
-    border-radius: 6px;
-    height: 40px;
+    margin: 0;
   }
   
-  .launches-list {
-    width: 100%;
+  .section {
+    padding: 1rem;
   }
+}
 
-  .buttons.is-right {
-    justify-content: center;
-    margin-top: 1rem;
+@media (max-width: 480px) {
+  .navigation-container {
+    gap: 0.75rem;
   }
   
-  .buttons.is-right .button {
-    font-size: 0.7rem;
+  .nav-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
   }
 }
 </style>

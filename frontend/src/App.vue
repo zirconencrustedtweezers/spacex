@@ -31,18 +31,14 @@ export default {
   methods: {
     async fetchCrewData() {
       try {
-        console.log('Fetching crew data from backend...')
         const response = await axios.get('/api/crew')
         const crewData = response.data.crew
-        
-        console.log(`Loaded ${crewData.length} crew members from backend`)
         
         crewData.forEach(crewMember => {
           this.crewMap.set(crewMember.id, crewMember)
         })
         
         this.crewLoading = false
-        console.log('Crew data loaded into Map:', this.crewMap.size, 'members')
         
       } catch (error) {
         this.crewError = 'Failed to load crew data'
