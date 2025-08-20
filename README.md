@@ -2,6 +2,7 @@
 
 ## Frontend
 - Vue.js with Axios and Vite
+- No separate container - build assets served statically by FastAPI
 
 ## Database
 - PostgreSQL
@@ -17,6 +18,14 @@
 - `scripts/seed_rockets.py` - Populates rocket data from SpaceX API
 
 ## Installation
+
+1. **Build frontend first:**
+```bash
+cd frontend
+npm run build
+```
+
+2. **Then start containers:**
 ```bash
 docker-compose up -d
 ```
