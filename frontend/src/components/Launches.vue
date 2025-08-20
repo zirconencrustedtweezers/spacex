@@ -9,7 +9,7 @@
           Explore the history of SpaceX missions
         </p>
         
-        <!-- Crew Filter Toggle -->
+        
         <div class="field is-grouped is-grouped-centered mt-4">
           <div class="control">
             <label class="checkbox">
@@ -24,13 +24,13 @@
         </div>
       </div>
 
-      <!-- Loading State -->
+      
       <div v-if="loading" class="has-text-centered py-6">
         <div class="loader"></div>
         <p class="has-text-grey mt-4">Loading launches...</p>
       </div>
 
-      <!-- Error State -->
+      
       <div v-else-if="error" class="notification is-danger">
         <p>{{ error }}</p>
         <button @click="fetchLaunches" class="button is-primary mt-3">
@@ -38,11 +38,11 @@
         </button>
       </div>
 
-      <!-- Launches with Navigation -->
+      
       <div v-else class="launches-container">
-        <!-- Navigation Container -->
+        
         <div class="navigation-container" v-if="launches.length > 0">
-          <!-- Left Arrow -->
+          
           <button 
             @click="goToPage(currentPage - 1)"
             :disabled="currentPage === 1"
@@ -52,7 +52,7 @@
             <i class="fas fa-chevron-left"></i>
           </button>
           
-          <!-- Launches Grid -->
+          
           <div class="launches-grid">
             <LaunchCard
               v-for="launch in launches" 
@@ -63,7 +63,7 @@
             />
           </div>
           
-          <!-- Right Arrow -->
+          
           <button 
             @click="goToPage(currentPage + 1)"
             :disabled="!hasMore"
@@ -74,7 +74,7 @@
           </button>
         </div>
         
-        <!-- Page Info -->
+        
         <div class="has-text-centered mt-4" v-if="launches.length > 0">
           <p class="has-text-grey is-size-7">
             Page {{ currentPage }} • {{ launches.length }} launches
@@ -82,7 +82,7 @@
           </p>
         </div>
         
-        <!-- No Results -->
+        
         <div v-if="launches.length === 0" class="has-text-centered py-6">
           <i class="fas fa-search has-text-grey is-size-1 mb-4"></i>
           <p class="title is-4 has-text-grey">No launches found</p>

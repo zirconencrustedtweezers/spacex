@@ -27,11 +27,11 @@
           <i class="fas fa-database has-text-grey is-size-1 mb-4"></i>
           <p class="title is-4 has-text-grey">No rockets loaded yet</p>
           <div class="box has-background-light">
-            <p class="has-text-grey-dark mb-3">
+            <p class="has-text-grey mb-3">
               To load SpaceX rockets data into the database, run:
             </p>
-            <code class="has-background-dark has-text-white p-3 is-block">
-              python3 scripts/fetch_rockets.py
+            <code class="has-background-light has-text-dark p-3 is-block">
+              python3 scripts/seed_rockets.py
             </code>
             <p class="has-text-grey mt-3 is-size-7">
               Make sure Docker containers are running first
@@ -60,7 +60,7 @@
                       <div class="field is-grouped is-grouped-multiline mb-3">
                         <div class="control" v-if="rocket.weight">
                           <div class="tags has-addons">
-                            <span class="tag is-dark">Weight</span>
+                            <span class="tag is-light">Weight</span>
                             <span class="tag is-info">{{ formatWeight(rocket.weight) }}</span>
                           </div>
                         </div>

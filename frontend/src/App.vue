@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <nav class="navbar is-dark" role="navigation">
+    <nav class="navbar is-primary" role="navigation">
       <div class="navbar-brand">
         <div class="navbar-item">
           <h1 class="title is-4 has-text-white">
@@ -103,11 +103,18 @@ export default {
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #ffffff !important;
+  color: #363636 !important;
 }
 
 #app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f8f9fa !important;
+  color: #363636 !important;
+}
+
+html {
+  background: #ffffff !important;
 }
 
 .navbar {
@@ -122,7 +129,11 @@ body {
 }
 
 .tabs ul {
-  border-bottom: none;
+  border-bottom: none !important;
+}
+
+.tabs {
+  border-bottom: none !important;
 }
 
 .tabs li a {
@@ -149,8 +160,21 @@ body {
 }
 
 .tab-content {
-  background: white;
+  background: #ffffff !important;
+  color: #363636 !important;
   min-height: calc(100vh - 140px);
+}
+
+p, h1, h2, h3, h4, h5, h6, span:not(.icon), div:not(.button):not(.tag) {
+  color: #363636 !important;
+}
+
+.section {
+  background: #ffffff !important;
+}
+
+.container {
+  background: #ffffff !important;
 }
 
 
