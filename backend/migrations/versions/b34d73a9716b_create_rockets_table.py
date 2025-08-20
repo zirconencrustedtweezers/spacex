@@ -29,7 +29,8 @@ def upgrade() -> None:
     sa.Column('type', sa.String(length=255), nullable=False),
     sa.Column('weight', sa.Integer(), nullable=True),
     sa.Column('description', sa.String(length=1000), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
 
 
